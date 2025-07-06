@@ -21,9 +21,13 @@ jobs:
 
       - name: SSH into EC2 and deploy
         run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.USER }}@${{ secrets.HOST }} << 'EOF'
-            cd ~/app-directory || mkdir ~/app-directory && cd ~/app-directory
-            git clone https://github.com/<your-username>/<your-repo>.git . || git pull
-            # Run your app restart/deploy commands here
+          ssh -o StrictHostKeyChecking=no ubuntu@13.53.176.30 << 'EOF'
+            mkdir -p ~/app && cd ~/app
+            if [ ! -d ".git" ]; then
+              git clone https://github.com/Samyak2605/blue-green-deployment.git .
+            else
+              git pull origin main
+            fi
+            npm install
             pm2 restart all || pm2 start index.js
           EOF
