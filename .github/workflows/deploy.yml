@@ -22,12 +22,21 @@ jobs:
       - name: SSH into EC2 and deploy
         run: |
           ssh -o StrictHostKeyChecking=no ubuntu@13.53.176.30 << 'EOF'
+            # Update and install Node.js + npm + pm2
+            sudo apt update -y
+            sudo apt install -y curl
+            curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+            sudo apt install -y nodejs
+            sudo npm install -g pm2
+
+            # Clone or pull the latest code
             mkdir -p ~/app && cd ~/app
             if [ ! -d ".git" ]; then
               git clone https://github.com/Samyak2605/blue-green-deployment.git .
             else
               git pull origin main
             fi
+
             npm install
             pm2 restart all || pm2 start index.js
           EOF
